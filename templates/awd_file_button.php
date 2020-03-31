@@ -30,7 +30,9 @@ if ( $file ) {
     <div class="wrap">
         <?php if( $file ) { ?>
             <div class="section-button">
-                <a class="<?php echo $button_style; ?>" href="<?php echo esc_url($file_url); ?>" target="_blank" alt="<?php echo $file_alt; ?>"><?php echo esc_html($button_text) . $file_size; ?></a>
+                <a class="<?php echo $button_style; ?>" href="<?php echo esc_url($file_url); ?>" target="_blank" alt="<?php printf( __( '%s', 'awd-resource-archive' ), $file_alt ); ?>">
+                    <?php echo sprintf( __( '%s', 'awd-resource-archive' ), esc_html($button_text) ) . $file_size; ?>
+                </a>
             </div>
         <?php } ?>
     </div>

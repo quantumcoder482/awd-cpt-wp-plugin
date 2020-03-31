@@ -135,7 +135,17 @@ class AWDLayouts {
         
         // Script
         wp_enqueue_script( 'bootstrap-validator', '//cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js', array(), '0.11.9', true);
-        wp_enqueue_script( "awdra-js",  AWDRA_URL. "js/script.js", array('jquery'), '1.0.0', true );
-        wp_localize_script( 'awdra-js', 'settings', array('ajaxurl' => admin_url('admin-ajax.php') ) );
+        wp_enqueue_script( "awdra-js",  AWDRA_URL. "js/script.js", array('jquery', 'wp-i18n'), '1.0.0', true );
+        
+        wp_localize_script( 'awdra-js', 'settings', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'translations' => array(
+                "cant_send_email" => __( "Sorry, there are have some issues. can't send email", "awd-resource-archive" ),
+                "please_input_name_email" => __( "Please input email and name correctly!", "awd-resource-archive" ),
+                "email_blank" => __( "Email Blank", "awd-resource-archive" ),
+                "name_blank" => __( "Name Blank", "awd-resource-archive" ),
+                "email_invalid_format" => __( "Invalid Email Address Format", "awd-resource-archive" )
+            )
+        ) );
     }
 }

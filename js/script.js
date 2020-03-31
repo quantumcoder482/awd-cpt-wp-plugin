@@ -1,9 +1,6 @@
 (function ($) {
     $(document).ready(function() {
-
-
         /** Global Variable */
-
         const ajax_url = settings.ajaxurl;
         const current_page_url = window.location.href;
 
@@ -45,6 +42,8 @@
         });
 
         $('.post-card').on('click', function(event){
+            event.preventDefault();
+
             $('.post-card').removeClass('active');
             $(this).addClass('active');
 
@@ -62,7 +61,7 @@
                 }
             })
 
-        })
+        });
 
         function reset_search_string(){
             $search_string.val('');
@@ -91,10 +90,8 @@
             }
 
             $.post(ajax_url, post_data, function (response) {
-
                 var response_data = JSON.parse(response);
-                console.log(response_data.msg);
-
+                
                 if (!response_data.success) {
                     $('#section_posts').html(response_data.msg);
                 } else {
@@ -125,8 +122,8 @@
 
         $(".tabs-container .tabs-content").each(function(){
             $(this).hide();
-            if($(this).attr('id') == 'tab-1') {
-                $(this).fadeIn('slow');;
+            if($(this).attr('id') == 'tab-0') {
+                $(this).fadeIn('slow');
             }
         });
 
@@ -198,7 +195,7 @@
                         
             if( form_validate.validate_result != true ){
 
-                $('.frm_error').html('Please input email and name correctly!');
+                $('.frm_error').html( settings.translations.please_input_name_email );
 
             } else {
 
@@ -207,24 +204,19 @@
                 $.post(ajax_url, post_data, function(response) {
 
                     var response_data = JSON.parse(response);
-                    // console.log(response_data.msg);
-                    
+
                     if ( !response_data.success ) {
-                        $('#email_sent_confirm .modal-body p').html('Sorry, there are have some issues. can \'t send email');
+                        $('#email_sent_confirm .modal-body p').html( settings.translations.cant_send_email );
                         $email_modal.modal('hide');
                         $confirm_modal_1.modal('show');
                     } else {
-                        // console.log(response_data.result);
                         $('#awd_email_sent').html(response_data.result.email);
                         
                         $email_modal.modal('hide');
                         $confirm_modal_1.modal('show');
                     }
-
                 })
-
             }
-            
         })
 
         $copy_path_btn.on('click', function(e) {
@@ -250,19 +242,18 @@
             var msg = {};
 
             if( email == '' ) {
-                msg.blank_email = 'Email blank';
+                msg.blank_email = settings.translations.email_blank;
             }
 
             if( name == '' ) {
-                msg.blank_name = 'Name blank';
+                msg.blank_name = settings.translations.name_blank;
             }
 
             if( ! IsEmail(email) ){
-                msg.invalid_email = "Invalid Email Address Format";
+                msg.invalid_email = settings.translations.email_invalid_format;
             }
 
             if( Object.keys(msg).length != 0 ){
-                console.log( JSON.stringify(msg) );
                 return {
                     'validate_result' : false,
                     'msg'             : msg
@@ -279,15 +270,6 @@
         function IsEmail(email) {
             var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
             if( !regex.test(email) ) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        function IsName(name) {
-            var regex = /^[A-Z][a-zA-Z][^#&<>\"~;$^%{}?]{1,20}+$/;
-            if ( !regex.test(name) ){
                 return false;
             } else {
                 return true;

@@ -34,4 +34,27 @@ class AWDHelper {
 
 		return $container_attributes;
 	}
+
+	public function phone_number_formatter( $number ) {
+		$number_formats = array();
+
+		$number_formats['raw'] = preg_replace( "/[^\d]/", "", $number );
+
+		$length = strlen( $number_formats['raw'] );
+
+		if( 10 <= $length ) {
+			$chunks = array(
+					'country'	=> substr( $number_formats['raw'], 0, ( $length - 10 ) ),
+					'area'		=> substr( $number_formats['raw'], ( $length - 10 ), 3 ),
+					'first'		=> substr( $number_formats['raw'], ( $length - 7 ), 3 ),
+					'last'		=> substr( $number_formats['raw'], ( $length - 4 ), 4 ),
+					);
+			$number_formats['formatted'] = $chunks['country'] ? '+' . $chunks['country'] . ' ' : '';
+			$number_formats['formatted'] .= '(' . $chunks['area'] . ') ' . $chunks['first'] . '-' . $chunks['last'];
+		} else {
+			$number_formats['formatted'] = $number;
+		}
+
+		return $number_formats;
+	}
 }

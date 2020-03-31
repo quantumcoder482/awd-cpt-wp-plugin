@@ -71,6 +71,7 @@ class AWDResourceArchive {
         $this->add_layouts();
         $this->add_shortcodes();
         $this->add_acf_archive();
+        $this->awd_bridge_functions();
 
         // add custom post type and taxonomies
         add_action( 'init', array( $this, 'awd_resource_archive' ), 0 );
@@ -124,6 +125,12 @@ class AWDResourceArchive {
          */
 
         require_once( AWDRA_DIR . "includes/acf-archive.php" );
+
+        /**
+         * The class responsible for bridge functions with other plugins
+         */
+
+        require_once( AWDRA_DIR . "includes/class-bridge-functions.php" );
     }
 
     private function add_layouts() {
@@ -138,6 +145,10 @@ class AWDResourceArchive {
         $this->awd_acf_archive = new ACF_Archive();
     }
 
+    public function awd_bridge_functions() {
+        new AWD_Bridge_Functions();
+    }
+ 
     /**
      * Post Type: Pregnancy Resources.
      */
@@ -147,35 +158,35 @@ class AWDResourceArchive {
         $labels = array(
             'name'                  => _x( 'Resources', 'Post Type General Name', 'awd-resource-archive' ),
             'singular_name'         => _x( 'Resource', 'Post Type Singular Name', 'awd-resource-archive' ),
-            'menu_name'             => __( 'Resources', 'awd-resource-archive' ),
-            'name_admin_bar'        => __( 'Resources', 'awd-resource-archive' ),
-            'archives'              => __( 'Resource Archives', 'awd-resource-archive' ),
-            'attributes'            => __( 'Resource Attributes', 'awd-resource-archive' ),
-            'parent_item_colon'     => __( 'Parent Resource:', 'awd-resource-archive' ),
-            'all_items'             => __( 'All Resources', 'awd-resource-archive' ),
-            'add_new_item'          => __( 'Add New Resource', 'awd-resource-archive' ),
-            'add_new'               => __( 'Add New', 'awd-resource-archive' ),
-            'new_item'              => __( 'New Resource', 'awd-resource-archive' ),
-            'edit_item'             => __( 'Edit Resource', 'awd-resource-archive' ),
-            'update_item'           => __( 'Update Resource', 'awd-resource-archive' ),
-            'view_item'             => __( 'View Resource', 'awd-resource-archive' ),
-            'view_items'            => __( 'View Resources', 'awd-resource-archive' ),
-            'search_items'          => __( 'Search Resource', 'awd-resource-archive' ),
-            'not_found'             => __( 'Not found', 'awd-resource-archive' ),
-            'not_found_in_trash'    => __( 'Not found in Trash', 'awd-resource-archive' ),
-            'featured_image'        => __( 'Featured Image', 'awd-resource-archive' ),
-            'set_featured_image'    => __( 'Set featured image', 'awd-resource-archive' ),
-            'remove_featured_image' => __( 'Remove featured image', 'awd-resource-archive' ),
-            'use_featured_image'    => __( 'Use as featured image', 'awd-resource-archive' ),
-            'insert_into_item'      => __( 'Insert into resource', 'awd-resource-archive' ),
-            'uploaded_to_this_item' => __( 'Uploaded to this resource', 'awd-resource-archive' ),
-            'items_list'            => __( 'Resources list', 'awd-resource-archive' ),
-            'items_list_navigation' => __( 'Resources list navigation', 'awd-resource-archive' ),
-            'filter_items_list'     => __( 'Filter resources list', 'awd-resource-archive' ),
+            'menu_name'             => _x( 'Resources', 'Post Type Registration', 'awd-resource-archive' ),
+            'name_admin_bar'        => _x( 'Resources', 'Post Type Registration', 'awd-resource-archive' ),
+            'archives'              => _x( 'Resource Archives', 'Post Type Registration', 'awd-resource-archive' ),
+            'attributes'            => _x( 'Resource Attributes', 'Post Type Registration', 'awd-resource-archive' ),
+            'parent_item_colon'     => _x( 'Parent Resource:', 'Post Type Registration', 'awd-resource-archive' ),
+            'all_items'             => _x( 'All Resources', 'Post Type Registration', 'awd-resource-archive' ),
+            'add_new_item'          => _x( 'Add New Resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'add_new'               => _x( 'Add New', 'Post Type Registration', 'awd-resource-archive' ),
+            'new_item'              => _x( 'New Resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'edit_item'             => _x( 'Edit Resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'update_item'           => _x( 'Update Resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'view_item'             => _x( 'View Resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'view_items'            => _x( 'View Resources', 'Post Type Registration', 'awd-resource-archive' ),
+            'search_items'          => _x( 'Search Resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'not_found'             => _x( 'Not found', 'Post Type Registration', 'awd-resource-archive' ),
+            'not_found_in_trash'    => _x( 'Not found in Trash', 'Post Type Registration', 'awd-resource-archive' ),
+            'featured_image'        => _x( 'Featured Image', 'Post Type Registration', 'awd-resource-archive' ),
+            'set_featured_image'    => _x( 'Set featured image', 'Post Type Registration', 'awd-resource-archive' ),
+            'remove_featured_image' => _x( 'Remove featured image', 'Post Type Registration', 'awd-resource-archive' ),
+            'use_featured_image'    => _x( 'Use as featured image', 'Post Type Registration', 'awd-resource-archive' ),
+            'insert_into_item'      => _x( 'Insert into resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'uploaded_to_this_item' => _x( 'Uploaded to this resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'items_list'            => _x( 'Resources list', 'Post Type Registration', 'awd-resource-archive' ),
+            'items_list_navigation' => _x( 'Resources list navigation', 'Post Type Registration', 'awd-resource-archive' ),
+            'filter_items_list'     => _x( 'Filter resources list', 'Post Type Registration', 'awd-resource-archive' ),
         );
         $args = array(
-            'label'                 => __( 'Resource', 'awd-resource-archive' ),
-            'description'           => __( 'Resource Posts', 'awd-resource-archive' ),
+            'label'                 => _x( 'Resource', 'Post Type Registration', 'awd-resource-archive' ),
+            'description'           => _x( 'Resource Posts', 'Post Type Registration', 'awd-resource-archive' ),
             'labels'                => $labels,
             'supports'              => array( 'title', 'editor', 'thumbnail', 'revisions', 'custom-fields', 'post-formats', 'excerpt' ),
             'taxonomies'            => array( 'resource_category' ),
@@ -201,26 +212,26 @@ class AWDResourceArchive {
     public function awd_resource_category(){
 
         $labels = array(
-            'name' => _x('Resource Categories', 'Taxonomy General Name', 'resource-archive'),
-            'singular_name' => _x('Resource Category', 'Taxonomy Singular Name', 'resource-archive'),
-            'menu_name' => __('Categories', 'resource-archive'),
-            'all_items' => __('All Categories', 'resource-archive'),
-            'parent_item' => __('Parent Category', 'resource-archive'),
-            'parent_item_colon' => __('Parent Category:', 'resource-archive'),
-            'new_item_name' => __('New Category Name', 'resource-archive'),
-            'add_new_item' => __('Add New Category', 'resource-archive'),
-            'edit_item' => __('Edit Category', 'resource-archive'),
-            'update_item' => __('Update Category', 'resource-archive'),
-            'view_item' => __('View Category', 'resource-archive'),
-            'separate_items_with_commas' => __('Separate categories with commas', 'resource-archive'),
-            'add_or_remove_items' => __('Add or remove categories', 'resource-archive'),
-            'choose_from_most_used' => __('Choose from the most used', 'resource-archive'),
-            'popular_items' => __('Popular Categories', 'resource-archive'),
-            'search_items' => __('Search Categories', 'resource-archive'),
-            'not_found' => __('Not Found', 'resource-archive'),
-            'no_terms' => __('No categories', 'resource-archive'),
-            'items_list' => __('Categories list', 'resource-archive'),
-            'items_list_navigation' => __('Categories list navigation', 'resource-archive'),
+            'name' => _x('Resource Categories', 'Taxonomy General Name', 'awd-resource-archive'),
+            'singular_name'                 => _x('Resource Category', 'Taxonomy Singular Name', 'awd-resource-archive'),
+            'menu_name'                     => _x('Categories', 'Taxonomy Registration', 'awd-resource-archive'),
+            'all_items'                     => _x('All Categories', 'Taxonomy Registration', 'awd-resource-archive'),
+            'parent_item'                   => _x('Parent Category', 'Taxonomy Registration', 'awd-resource-archive'),
+            'parent_item_colon'             => _x('Parent Category:', 'Taxonomy Registration', 'awd-resource-archive'),
+            'new_item_name'                 => _x('New Category Name', 'Taxonomy Registration', 'awd-resource-archive'),
+            'add_new_item'                  => _x('Add New Category', 'Taxonomy Registration', 'awd-resource-archive'),
+            'edit_item'                     => _x('Edit Category', 'Taxonomy Registration', 'awd-resource-archive'),
+            'update_item'                   => _x('Update Category', 'Taxonomy Registration', 'awd-resource-archive'),
+            'view_item'                     => _x('View Category', 'Taxonomy Registration', 'awd-resource-archive'),
+            'separate_items_with_commas'    => _x('Separate categories with commas', 'Taxonomy Registration', 'awd-resource-archive'),
+            'add_or_remove_items'           => _x('Add or remove categories', 'Taxonomy Registration', 'awd-resource-archive'),
+            'choose_from_most_used'         => _x('Choose from the most used', 'Taxonomy Registration', 'awd-resource-archive'),
+            'popular_items'                 => _x('Popular Categories', 'Taxonomy Registration', 'awd-resource-archive'),
+            'search_items'                  => _x('Search Categories', 'Taxonomy Registration', 'awd-resource-archive'),
+            'not_found'                     => _x('Not Found', 'Taxonomy Registration', 'awd-resource-archive'),
+            'no_terms'                      => _x('No categories', 'Taxonomy Registration', 'awd-resource-archive'),
+            'items_list'                    => _x('Categories list', 'Taxonomy Registration', 'awd-resource-archive'),
+            'items_list_navigation'         => _x('Categories list navigation', 'Taxonomy Registration', 'awd-resource-archive'),
         );
         $rewrite = array(
             'slug' => 'resource-category',
@@ -247,24 +258,24 @@ class AWDResourceArchive {
         $labels = array(
             'name'                       => _x( 'Trimesters', 'Taxonomy General Name', 'awd-resource-archive' ),
             'singular_name'              => _x( 'Trimester', 'Taxonomy Singular Name', 'awd-resource-archive' ),
-            'menu_name'                  => __( 'Trimesters', 'awd-resource-archive' ),
-            'all_items'                  => __( 'All Trimesters', 'awd-resource-archive' ),
-            'parent_item'                => __( 'Parent Trimester', 'awd-resource-archive' ),
-            'parent_item_colon'          => __( '', 'awd-resource-archive' ),
-            'new_item_name'              => __( 'New Trimester Name', 'awd-resource-archive' ),
-            'add_new_item'               => __( 'Add New Trimester', 'awd-resource-archive' ),
-            'edit_item'                  => __( 'Edit Trimester', 'awd-resource-archive' ),
-            'update_item'                => __( 'Update Trimester', 'awd-resource-archive' ),
-            'view_item'                  => __( 'View Trimester', 'awd-resource-archive' ),
-            'separate_items_with_commas' => __( 'Separate trimesters with commas', 'awd-resource-archive' ),
-            'add_or_remove_items'        => __( 'Add or remove trimesters', 'awd-resource-archive' ),
-            'choose_from_most_used'      => __( 'Choose from the most used', 'awd-resource-archive' ),
-            'popular_items'              => __( 'Most-Used Trimesters', 'awd-resource-archive' ),
-            'search_items'               => __( 'Search Trimesters', 'awd-resource-archive' ),
-            'not_found'                  => __( 'Not Found', 'awd-resource-archive' ),
-            'no_terms'                   => __( 'No Trimesters', 'awd-resource-archive' ),
-            'items_list'                 => __( 'Trimesters list', 'awd-resource-archive' ),
-            'items_list_navigation'      => __( 'Trimesters list navigation', 'awd-resource-archive' ),
+            'menu_name'                  => _x( 'Trimesters', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'all_items'                  => _x( 'All Trimesters', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'parent_item'                => _x( 'Parent Trimester', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'parent_item_colon'          => _x( '', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'new_item_name'              => _x( 'New Trimester Name', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'add_new_item'               => _x( 'Add New Trimester', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'edit_item'                  => _x( 'Edit Trimester', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'update_item'                => _x( 'Update Trimester', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'view_item'                  => _x( 'View Trimester', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'separate_items_with_commas' => _x( 'Separate trimesters with commas', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'add_or_remove_items'        => _x( 'Add or remove trimesters', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'choose_from_most_used'      => _x( 'Choose from the most used', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'popular_items'              => _x( 'Most-Used Trimesters', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'search_items'               => _x( 'Search Trimesters', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'not_found'                  => _x( 'Not Found', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'no_terms'                   => _x( 'No Trimesters', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'items_list'                 => _x( 'Trimesters list', 'Taxonomy Registration', 'awd-resource-archive' ),
+            'items_list_navigation'      => _x( 'Trimesters list navigation', 'Taxonomy Registration', 'awd-resource-archive' ),
         );
         $args = array(
             'labels'                     => $labels,
@@ -295,22 +306,22 @@ class AWDResourceArchive {
         parse_str( $_POST[ 'form_data' ], $post_data );
 
         if ( !$post_data['_wpnonce'] || ! wp_verify_nonce( $post_data['_wpnonce'], 'get_resource_posts' ) ){
-            $response = array( "success" => false, "msg" => "Sorry, but nothing matched your search terms. Please try again with some different keywords." );
+            $response = array( "success" => false, "msg" => __( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', 'awd-resource-archive' ) );
             echo json_encode( $response );
             wp_die();
         }
 
         if( isset( $post_data['search_string'] ) && $post_data['search_string'] !== '' ){
-            $args['s'] = $post_data['search_string'];
+            $args['s'] = esc_html( $post_data['search_string'] );
         }
 
         $resource_category = "";
         if( isset( $post_data['resource_category'] ) && $post_data['resource_category'] !== '' ){
-            $resource_category = $post_data['resource_category'];
+            $resource_category = esc_html( $post_data['resource_category'] );
         }
         $trimester = "";
         if( isset( $post_data['trimester'] ) && !empty( $post_data['trimester'] ) ){
-            $trimester = $post_data['trimester'];
+            $trimester = esc_html( $post_data['trimester'] );
         }
 
         if( $resource_category != "" && $trimester != ""){
@@ -356,33 +367,39 @@ class AWDResourceArchive {
             $count++; 
             $f = ($count % 3 == 1)? ' first' : '';
 
-
             $texonomy_icon_type = 'default-taxonomy-type';
-            $post_terms = wp_get_post_terms(get_the_ID(), 'resource_category');
+            $post_terms = wp_get_post_terms( get_the_ID(), 'resource_category' );
+            
             if( $post_terms ){
                 $texonomy_icon_type = $post_terms[0]->slug;
             }
 
+            $custom_link = get_post_meta( get_the_id(), "awd_external_link", true );
+            $target = ( "" == $custom_link )? "": "target=\"_blank\"";               
+            $link = ( "" == $custom_link )? get_the_permalink(): $custom_link; 
+            
             $response_string .= "
-            <div class='one-third $f'>
-                <a href='".$this->format_filtered_post_link( get_the_ID() )."'>
-                    <div class='post-card' id='post-".get_the_ID()."' ".get_post_class()." >
-                        <div class='card-left'>
-                            <div class='".$texonomy_icon_type."'>&nbsp;</div>
-                        </div>
-                        <div class='card-right'>
-                            <header class='entry-header'>".get_the_title()."</header>
-                            <main class='entry-content'>".$this->excerpt(get_the_excerpt(), 125)."</main>
-                            <footer class='entry-footer'>
-                                <a href='".$this->format_filtered_post_link( get_the_ID() )."' class='read-more'>READ MORE</a>
-                            </footer>
-                        </div>
-                    </div>
+            <div style=\"display:block\" class='one-third $f'>
+                <a href=\"" . $link . "\" " . $target . " style=\"display: block\">
+                    <span style=\"display:inline-block\" class='post-card' id='post-".get_the_ID()."' ".get_post_class()." >
+                        <span style=\"display:block\" class='card-left'>
+                            <span style=\"display:block\" class='".$texonomy_icon_type."'>&nbsp;</span>
+                        </span>
+                        <span style=\"display:block\" class='card-right'>
+                            <span style=\"display:block\" class='entry-header'>".get_the_title()."</span>
+                            <span style=\"display:block\" class='entry-content'>".$this->excerpt(get_the_excerpt(), 80)."</span>
+                            <span class='entry-footer' style=\"display: block\">" . 
+                                sprintf( '<span class="read-more">%s</span>',
+                                    __( 'READ MORE', 'awd-resource-archive' )
+                                ) . 
+                            "</span>
+                        </span>
+                    </span>
                 </a>
             </div>";
         }
 
-        echo json_encode( array("success"=>true,"count"=>$count, "result"=>$response_string ) );
+        echo json_encode( array( "success" => true, "count" => $count, "result" => $response_string ) );
         wp_die();
 
     }
@@ -406,8 +423,20 @@ class AWDResourceArchive {
         
         $excerpt = "";
         if( strlen($string) > $limit ){
-            $excerpt = substr($string, 0, $limit);
+            
+            $parts = preg_split( '/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE );
+            $parts_count = count($parts);
+
+            $length = 0;
+            $last_part = 0;
+            for (; $last_part < $parts_count; ++$last_part) {
+                $length += strlen($parts[$last_part]);
+                if ($length > $limit) { break; }
+            }
+
+            $excerpt = implode(array_slice($parts, 0, $last_part));
             $excerpt .= ' ...';
+            
         }else {
             $excerpt = $string;
         }
@@ -425,7 +454,7 @@ class AWDResourceArchive {
         parse_str( $_POST[ 'form_data' ], $post_data );
 
         if ( !$post_data['_wpnonce'] || ! wp_verify_nonce( $post_data['_wpnonce'], 'awd_send_email' ) ){
-            $response = array( "success" => false, "msg" => "Sorry, but nothing matched token." );
+            $response = array( "success" => false, "msg" => "Nonce could not be verified." );
             echo json_encode( $response );
             wp_die();
         }
@@ -434,15 +463,25 @@ class AWDResourceArchive {
         $name = $post_data['name'];
         $url = $post_data['current_url'];
 
-        $subject = "People's community clinic";
-        $message = "PEOPLE'S COMMUNITY CLINIC \n".$url."\n From ".$name; 
+        $subject = sprintf( "%s %s",
+                esc_html( $name ),
+                /* translators: Link email subject. Preceded by user-entered name */
+                __( "sent you a link!", "awd-resource-archive" )
+            );
+        $message = sprintf( "%s %s\n%s",
+                esc_html( $name ),
+                /* translators: Content before URL */
+                __( "sent you the following resource:", "awd-resource-archive" ),
+                $url
+            );
 
-        if( wp_mail($to_email, $subject, $message) ){
+
+        if( wp_mail( sanitize_email( $to_email ), $subject, $message) ){
             $return_data = array(
-                "success"   =>  true,
-                "result"    =>  array(
-                    "email" => $to_email,
-                    "name"  => $name,
+                "success"   => true,
+                "result"    => array(
+                    "email" => sanitize_email( $to_email ),
+                    "name"  => esc_html( $name ),
                     "url"   => $url
                 )
             );

@@ -29,20 +29,20 @@ if( $button ) {
 <div <?php echo $container_attributes; ?>>
     <div class="wrap">
         <div class="one-half first">
-            <?php echo $left_content;
+            <?php _e( $left_content, 'awd-resource-archive' );
 
             if( $button && 'left' == $button_position ) { ?>
                 <div class="section-button">
-                    <a class="<?php echo $button_style; ?>" href="<?php echo esc_url($button_url); ?>" target="<?php echo esc_attr($button_target); ?>"><?php echo esc_html($button_title); ?></a>
+                    <a class="<?php echo $button_style; ?>" href="<?php echo esc_url($button_url); ?>" target="<?php echo esc_attr($button_target); ?>"><?php _e( esc_html($button_title), 'awd-resource-archive' ); ?></a>
                 </div>
             <?php } ?>
         </div>
         <div class="one-half">
-            <?php echo $right_content;
+            <?php _e( $right_content, 'awd-resource-archive' );
 
             if( $button && 'right' == $button_position ) { ?>
                 <div class="section-button">
-                    <a class="<?php echo $button_style; ?>" href="<?php echo esc_url($button_url); ?>" target="<?php echo esc_attr($button_target); ?>"><?php echo esc_html($button_title); ?></a>
+                    <a class="<?php echo $button_style; ?>" href="<?php echo esc_url($button_url); ?>" target="<?php echo esc_attr($button_target); ?>"><?php _e( esc_html($button_title), 'awd-resource-archive' ); ?></a>
                 </div>
             <?php } ?>
         </div>

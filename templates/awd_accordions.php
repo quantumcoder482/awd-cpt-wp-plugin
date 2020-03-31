@@ -12,15 +12,37 @@ $split_point += $accordions_count & 1 ? 1 : 0;
 ?>
 <div class="awd-accordion awd-sec" <?php if( get_sub_field('section_id') ): ?> id="<?php echo get_sub_field('section_id'); ?>" <?php endif; ?> >
     <div class="wrap">
-        <?php if( get_sub_field('heading') ): ?><h2><?php echo get_sub_field('heading'); ?></h2><?php  endif; ?>
+        <?php if( get_sub_field('heading') ): ?>
+            <h2>
+                <?php printf(
+                    /* translators: %s: section heading */
+                    __( '%s', 'awd-resource-archive' ),
+                    get_sub_field('heading')
+                ); ?>
+            </h2>
+        <?php  endif; ?>
         <div class="accordion one-half first">
             <?php if( have_rows('accordions') ): $count = 0; while( have_rows('accordions')): the_row();?>
                 <?php
                     $awd_ac_itemtitle = get_sub_field('title');
                     $awd_ac_itemdesc = get_sub_field('description');
                 ?>
-                <div class="accordion-title "><h5><?php echo $awd_ac_itemtitle; ?></h5></div>
-                <div class="accordion-answer" ><?php echo $awd_ac_itemdesc; ?></div>
+                <div class="accordion-title ">
+                    <h5>
+                        <?php printf(
+                            /* translators: %s: accordion title */
+                            __( '%s', 'awd-resource-archive' ),
+                            $awd_ac_itemtitle
+                        ); ?>
+                    </h5>
+                </div>
+                <div class="accordion-answer">
+                    <?php printf(
+                        /* translators: %s: accordion content */
+                        __( '%s', 'awd-resource-archive' ),
+                        $awd_ac_itemdesc
+                    ); ?>
+                </div>
 
                 <?php $count++;
                 if( $count === $split_point ) {

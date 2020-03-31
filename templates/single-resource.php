@@ -4,17 +4,23 @@ get_header();
 
 // Check for featured image
 $featured_image = get_the_post_thumbnail_url( get_the_ID(), 'full' );
+if(!$featured_image) {
+    $featured_image = get_field( 'featured_image', 'resource' );
+}
+
 $page_header_classes = 'page-header';
 $page_header_classes .= $featured_image ? ' awd-banner' : '';
+    
 
 ?>
-
+ 
 <div id="main-content-resource" class="main-content">
     <div id="primary" class="content-area">
         <section class="<?php echo $page_header_classes; ?>"<?php echo $featured_image ? ' style="background-image: url(' . $featured_image . ')"' : ''; ?>>
             <div class="header-bar">
                 <div class="wrap">
-                    <a href="<?php echo get_post_type_archive_link( 'resource' ); ?>" class="back-link">BACK TO ARCHIVES</a>
+                    <a href="<?php echo get_post_type_archive_link( 'resource' ); ?>" class="back-link"><?php echo _e( 'BACK TO ARCHIVES', 'awd-resource-archive' ); ?></a>
+                    <div class="awd-toggle"><?php echo do_shortcode( '[wpml_language_selector_widget]' ); ?></div>
                     <a href="#mail_send_modal" data-toggle="modal" class="header-bar-icon" id="send_mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
                 </div>
             </div>

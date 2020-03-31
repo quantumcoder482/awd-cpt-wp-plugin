@@ -5,39 +5,50 @@
  * @link https://codex.wordpress.org/Template_Hierarchy
  *
  * @package AWDRA
- * 
+ *
  */
 
 
 /**
  *  Get custom fields for resource archive page
- * @ $post_id = resource  // current custom post type 
+ * @ $post_id = resource  // current custom post type
  */
 
-$post_id = 'resource'; 
-$title = get_field( 'title', $post_id);
-$featured_image = get_field( 'featured_image', $post_id );
-$sub_title = get_field( 'sub_title', $post_id );
-$intro_text = get_field( 'intro_text', $post_id );
+$title = get_field( 'title', 'option');
+$featured_image = get_field( 'featured_image', 'option' );
+$sub_title = get_field( 'sub_title', 'option' );
+$intro_text = get_field( 'intro_text', 'option' );
 
 $page_header_classes = 'page-header';
 $page_header_classes .= $featured_image ? ' awd-banner' : '';
 
 /**
- *  Excert filter function 
- * @limit Integer 
+ *  Excert filter function
+ * @limit Integer
  */
 
 function excerpt($limit) {
     $result_string = get_the_excerpt();
     $excerpt = "";
     if( strlen($result_string) > $limit ){
-        $excerpt = substr($result_string, 0, $limit);
+
+        $parts = preg_split( '/([\s\n\r]+)/', $result_string, null, PREG_SPLIT_DELIM_CAPTURE );
+        $parts_count = count($parts);
+
+        $length = 0;
+        $last_part = 0;
+        for (; $last_part < $parts_count; ++$last_part) {
+            $length += strlen($parts[$last_part]);
+            if ($length > $limit) { break; }
+        }
+
+        $excerpt = implode(array_slice($parts, 0, $last_part));
         $excerpt .= ' ...';
+
     }else {
         $excerpt = $result_string;
     }
-    
+
     return $excerpt;
 }
 
@@ -83,38 +94,55 @@ $resources = new WP_Query( $args );
  */
 
 $get_terms_args = array(
-    'taxonomy' => 'resource_category', 
+    'taxonomy' => 'resource_category',
     'orderby' => 'name',
     'order' => 'ASC',
     'hide_empty' => false
 );
-
 $categories = get_terms( $get_terms_args );
+
+$trimester_args = array(
+    'taxonomy'      => 'trimester',
+    'meta_key'      => 'display_order',
+    'orderby'       => 'meta_value_num',
+    'order'         => 'ASC',
+    'hide_empty'    => false
+);
+$trimesters = get_terms( $trimester_args );
+
 get_header(); ?>
 
 <div class="site-content" id="resource-archive">
     <div class="row">
     <?php if ( $resources->have_posts() ) : ?>
-        
+
         <section class="<?php echo $page_header_classes; ?>"<?php echo $featured_image ? ' style="background-image: url(' . $featured_image . ')"' : ''; ?>>
-            <div class="header-bar">
-                <div class="wrap">
-                    <a href="#mail_send_modal" data-toggle="modal" class="header-bar-icon" id="send_mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
-                </div>
-            </div>
+            <?php include_once( AWDRA_DIR . 'templates/awd_header_bar.php' ); ?>
         </section>
         <div class="header-text">
-                <?php 
-                    if ( isset( $title ) ){
-                        echo "<h1 class='page-title'>$title</h1>";
-                    } else {
+                <?php
+                    if ( isset( $title ) ){ ?>
+                        <h1 class='page-title'>
+                            <?php printf(
+                                /* translators: %s: Archive title */
+                                __( '%s', 'awd-resource-archive' ),
+                                $title
+                            ); ?>
+                        </h1>
+                    <?php } else {
                         the_archive_title( '<h1 class="page-title">', '</h1>' );
                     }
                 ?>
-                <?php 
-                    if( isset($sub_title) ){
-                        echo "<h2> $sub_title </h2>";
-                    } 
+                <?php
+                    if( isset($sub_title) ){ ?>
+                        <h2>
+                            <?php printf(
+                                /* translators: %s: Subtitle */
+                                __( '%s', 'awd-resource-archive' ),
+                                $sub_title
+                            ); ?>
+                        </h2>
+                    <?php }
                 ?>
         </div>
 
@@ -122,7 +150,11 @@ get_header(); ?>
             <section class="awd-intro">
                 <div class="divider-line"></div>
                 <div class='intro-text'>
-                    <?php echo $intro_text; ?>
+                    <?php printf(
+                        /* translators: %s: Intro text */
+                        __( '%s', 'awd-resource-archive' ),
+                        $intro_text
+                    ); ?>
                 </div>
             </section>
         <?php } ?>
@@ -133,17 +165,22 @@ get_header(); ?>
                      <?php wp_nonce_field( 'get_resource_posts' );?>
                     <input type="hidden" id="trimester" name="trimester" value="">
                     <div class="one-half first input-style">
-                        <input type="text" id="search_string" name="search_string" placeholder="What are you searching for?" value="" >
+                        <input type="text" id="search_string" name="search_string" placeholder="<?php _e( 'What are you searching for?', 'awd-resource-archive' ); ?>" value="">
                         <button class="search-button"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </div>
                     <div class="one-half select-style">
                         <select id="resource_category" name="resource_category">
-                            <option value="">Choose a category</option>
-                            <?php 
+                            <option value=""><?php _e( 'Choose a category', 'awd-resource-archive' ); ?></option>
+                            <?php
                                 if( $categories ){
                                     foreach ($categories as $cat){
-                                        echo "<option value='$cat->name'>$cat->name</option>";
-                                    }
+                                        $category = sprintf(
+                                                /* translators: %s: Category name */
+                                                __( '%s', 'awd-resource-archive' ),
+                                                $cat->name
+                                            ); ?>
+                                        <option value='<?php echo $category; ?>'><?php echo $category; ?></option>
+                                    <?php }
                                 }
                             ?>
                         </select>
@@ -154,20 +191,35 @@ get_header(); ?>
                     <div class="tabs-container">
                         <div class="tabs-menuitem">
                             <div class="tab-menu active-tab" tab-attr="tab-0" style="display:none"></div>
-                            <div class="tab-menu" tab-attr="tab-1">1st</div>
-                            <div class="tab-menu" tab-attr="tab-2">2nd</div>
-                            <div class="tab-menu" tab-attr="tab-3">3rd</div>
-                            <div class="tab-menu" tab-attr="tab-4">After Baby</div>
+                            <?php foreach( $trimesters as $tab_number => $trimester ) {
+                                $short_name = get_field( 'awd_abbreviation', $trimester ) ?: $trimester->name; ?>
+
+                                <div class="tab-menu" tab-attr="tab-<?php echo ++$tab_number; ?>">
+                                    <?php printf( __( '%s', 'awd-resource-archive' ),
+                                        /* translators: %s: Trimester Abbreviation */
+                                        $short_name
+                                    ); ?>
+                                </div>
+                            <?php } ?>
                         </div>
                         <div class="tab-inner">
-                            <?php if( have_rows( 'trimester_tab_intros', $post_id )): while( have_rows( 'trimester_tab_intros', $post_id ) ): the_row(); ?>
-                                <div id="tab-0" class="tabs-content"><?php the_sub_field('description'); ?></div>
-                                <div id="tab-1" class="tabs-content"><?php the_sub_field('1st_trimester'); ?></div>
-                                <div id="tab-2" class="tabs-content"><?php the_sub_field('2nd_trimester'); ?></div>
-                                <div id="tab-3" class="tabs-content"><?php the_sub_field('3rd_trimester'); ?></div>
-                                <div id="tab-4" class="tabs-content"><?php the_sub_field('4th_trimester'); ?></div>
-                            <?php endwhile; endif;?>
-                        </div> 
+                            <div id="tab-0" class="tabs-content">
+                                <?php printf(
+                                    /* translators: %s: Trimesters area description */
+                                    __( '%s', 'awd-resource-archive' ),
+                                    get_field( 'trimesters_default_description', 'option' )
+                                ); ?>
+                            </div>
+                            <?php foreach( $trimesters as $tab_number => $trimester ) { ?>
+                                <div id="tab-<?php echo ++$tab_number; ?>" class="tabs-content">
+                                    <?php printf(
+                                        /* translators: %s: Trimester description */
+                                        __( '%s', 'awd-resource-archive' ),
+                                        $trimester->description
+                                    ); ?>
+                                </div>
+                            <?php } ?>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -176,9 +228,14 @@ get_header(); ?>
         <section class="section-posts" id="section_posts">
         <?php $count = 0; while ( $resources->have_posts() ) : $resources->the_post(); $count++; ?>
             <div class="one-third <?php if($count % 3 == 1): echo 'first'; endif; ?>">
-                <a href="<?php echo format_filtered_post_link( get_the_ID() ); ?>">
-                    <div class="post-card" id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-                        <div class="card-left">
+                <?php
+                $custom_link = get_post_meta( get_the_id(), "awd_external_link", true );
+                $target = ( "" == $custom_link )? "": "target=\"_blank\"";               
+                $link = ( "" == $custom_link )? get_the_permalink(): $custom_link;
+                ?>
+                <a href="<?= $link; ?>" <?= $target; ?> style="display:block">                
+                    <span style="display: block" class="post-card" id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+                        <span style="display: block" class="card-left">
                             <?php
                                 $texonomy_icon_type = 'default-taxonomy-type';
                                 $post_terms = wp_get_post_terms(get_the_ID(), 'resource_category');
@@ -186,22 +243,22 @@ get_header(); ?>
                                     $texonomy_icon_type = $post_terms[0]->slug;
                                 }
                             ?>
-                            <div class="<?php echo $texonomy_icon_type; ?>">&nbsp;</div>
-                        </div>
-                        <div class="card-right">
-                            <header class="entry-header">
+                            <span style="display: block" class="<?php echo $texonomy_icon_type; ?>">&nbsp;</span>
+                        </span>
+                        <span style="display: block" class="card-right">
+                            <span style="display: block" class="entry-header">
                                 <?php the_title(); ?>
-                            </header><!-- .entry-header -->
-                            <main class="entry-content">
-                                <?php if( has_excerpt() ): echo excerpt(125); else: echo 'Doesn\'t Have Excerpt'; endif;?>
-                            </main><!-- .entry-content -->
-                            <footer class="entry-footer">
-                                <a href="<?php echo format_filtered_post_link( get_the_ID() ); ?>" class="read-more">READ MORE</a>
-                            </footer><!-- .entry-footer -->
-                        </div>                   
-                    </div><!-- #post-## -->
+                            </span><!-- .entry-header -->
+                            <span style="display: block" class="entry-content">
+                                <?php if( has_excerpt() ): echo excerpt(80); else: _e( 'Visit this resource for more information', 'awd-resource-archive' ); endif;?>
+                            </span><!-- .entry-content -->
+                            <span class="entry-footer" style="display: block">
+                                <span class="read-more"><?php _e( 'READ MORE', 'awd-resource-archive' ); ?></span>
+                            </span><!-- .entry-footer -->
+                        </span>
+                    </span><!-- #post-## -->
                 </a>
-            </div>            
+            </div>
         <?php endwhile; ?>
         </section>
         <?php //the_posts_navigation(); ?>
@@ -235,35 +292,13 @@ get_header(); ?>
     <?php endif; ?>
 
     </div><!-- #main -->
+    <?php $footer_contact = get_post( 481 );
+
+    if( $footer_contact instanceof WP_Post ) {
+        echo do_shortcode( $footer_contact->post_content );
+    } ?>
 </div><!-- #primary -->
-<div class="contact-info">
-    <section class="map animated-box animated">
-        <div class="map-holder" style="">
-            <iframe src="https://mapsengine.google.com/map/u/0/embed?mid=zkL9fO5gPk5k.kiRH8hkYtknA&amp;output=classic&amp;z=12" width="600" height="600" frameborder="0" style="border: 0px; top: -50px; position: relative; height: 390px;" allowfullscreen="" class="same-height-left same-height-right"></iframe>
-        </div>
-    </section>
-    <div class="container animated-box animated">
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="box-contact same-height-left same-height-right" style="height: 309px;">
-                    <div class="box">
-                        <h3>PCC CENTER FOR WOMEN’S HEALTH</h3>
-                        <address>
-                            2909 North IH-35 <br> Austin, Texas 78722 <br> <a href="tel:1234567890" class="phone">512-478-4939</a>
-                        </address>
-                    </div>
-                    <div class="box">
-                        <h3>PCC NORTH</h3>
-                        <address>
-                            1101 Camino La Costa <br> Austin, TX 78752 <br> <a href="tel:1234567890" class="phone">512-478-4939</a>
-                        </address>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<?php 
-include( AWDRA_DIR . 'templates/modal.php'); 
+<?php include( AWDRA_DIR . 'templates/modal.php');
+
 get_sidebar();
 get_footer();
