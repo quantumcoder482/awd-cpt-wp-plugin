@@ -84,6 +84,8 @@
 
         function get_post_data() {
 
+            $('#section_posts').html('<div style="text-align: center; padding: 4rem 4rem 70vh 4rem;"><strong><em>' + settings.translations.loading_results + '</em></strong></div>');
+
             var post_data = {
                 'action': 'get_resource_posts',
                 'form_data': $('#search_form').serialize()
@@ -96,6 +98,9 @@
                     $('#section_posts').html(response_data.msg);
                 } else {
                     $('#section_posts').html(response_data.result);
+
+                    var target_top = $("#search_form").offset().top - $("#header").height();
+                    $('html, body').animate({scrollTop:target_top}, 500, 'swing');
                 }
 
             })
@@ -146,27 +151,10 @@
                         $(this).fadeIn('slow');
                     }
                 });
-                
-                switch (tab_attr) {
-                    case 'tab-1':
-                        $trimester.val('First Trimester');
-                        get_post_data();
-                        break;
-                    case 'tab-2':
-                        $trimester.val('Second Trimester');
-                        get_post_data();
-                        break;
-                    case 'tab-3':
-                        $trimester.val('Third Trimester');
-                        get_post_data();
-                        break;
-                    case 'tab-4':
-                        $trimester.val('After Baby');
-                        get_post_data();
-                        break;
-                    default:
-                        break;
-                }
+
+
+               $trimester.val($(this).attr('data-value'));
+               get_post_data();
             }
         });
         

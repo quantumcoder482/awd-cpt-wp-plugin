@@ -55,6 +55,8 @@ class AWDResourceArchive {
      */
     protected $awd_acf_archive;
 
+    private $helper;
+
     /**
      * The construct
      */
@@ -71,7 +73,7 @@ class AWDResourceArchive {
         $this->add_layouts();
         $this->add_shortcodes();
         $this->add_acf_archive();
-        $this->awd_bridge_functions();
+        $this->awd_helper_classes();
 
         // add custom post type and taxonomies
         add_action( 'init', array( $this, 'awd_resource_archive' ), 0 );
@@ -111,6 +113,11 @@ class AWDResourceArchive {
     private function load_dependencies() {
 
         /**
+         * Helper class with common methods
+         */
+        require_once( AWDRA_DIR . "includes/class-helper.php" );
+
+        /**
          * The class responsible for assigning layouts to sections and pages
          */
         require_once( AWDRA_DIR . "includes/layout.php" );
@@ -145,8 +152,10 @@ class AWDResourceArchive {
         $this->awd_acf_archive = new ACF_Archive();
     }
 
-    public function awd_bridge_functions() {
+    public function awd_helper_classes() {
         new AWD_Bridge_Functions();
+
+        $this->helper = new AWDHelper();
     }
  
     /**
@@ -329,12 +338,12 @@ class AWDResourceArchive {
                     'relation' => 'AND',
                     array(
                         'taxonomy' => 'resource_category',
-                        'field'    => 'name',
+                        'field'    => 'slug',
                         'terms'    => $resource_category,
                     ),
                     array(
                         'taxonomy' => 'trimester',
-                        'field'    => 'name',
+                        'field'    => 'slug',
                         'terms'    => $trimester,
                     )
                 );
@@ -342,7 +351,7 @@ class AWDResourceArchive {
             $args['tax_query'] = array(
                 array(
                     'taxonomy' => 'resource_category',
-                    'field'    => 'name',
+                    'field'    => 'slug',
                     'terms'    => $resource_category,
                 ),
             );
@@ -350,10 +359,14 @@ class AWDResourceArchive {
             $args['tax_query'] = array(
                 array(
                     'taxonomy' => 'trimester',
-                    'field'    => 'name',
+                    'field'    => 'slug',
                     'terms'    => $trimester,
                 ),
             );
+        }
+
+        if( isset( $_GET['lang'] ) && ($_GET['lang'] == 'es' ) ) {
+            $args['lang'] = 'es';
         }
 
         $resources = new WP_Query( $args );
@@ -367,11 +380,22 @@ class AWDResourceArchive {
             $count++; 
             $f = ($count % 3 == 1)? ' first' : '';
 
-            $texonomy_icon_type = 'default-taxonomy-type';
+            $taxonomy_icon = 'default-taxonomy-type';
             $post_terms = wp_get_post_terms( get_the_ID(), 'resource_category' );
             
             if( $post_terms ){
-                $texonomy_icon_type = $post_terms[0]->slug;
+                $primary_term = $this->helper->get_primary_category( get_the_ID(), 'resource_category' );
+                $english_term_id = apply_filters( 'wpml_object_id', $primary_term->term_id, 'resource_category', true, 'en' );
+
+                global $icl_adjust_id_url_filter_off;
+                $orig_flag_value = $icl_adjust_id_url_filter_off;
+                $icl_adjust_id_url_filter_off = true;
+
+                $english_term = !empty( $english_term_id ) ? get_term_by( 'id', $english_term_id, 'resource_category' ) : '';
+
+                $icl_adjust_id_url_filter_off = $orig_flag_value;
+
+                $taxonomy_icon = !empty( $english_term ) ? $english_term->slug : 'default-taxonomy-type';
             }
 
             $custom_link = get_post_meta( get_the_id(), "awd_external_link", true );
@@ -383,7 +407,7 @@ class AWDResourceArchive {
                 <a href=\"" . $link . "\" " . $target . " style=\"display: block\">
                     <span style=\"display:inline-block\" class='post-card' id='post-".get_the_ID()."' ".get_post_class()." >
                         <span style=\"display:block\" class='card-left'>
-                            <span style=\"display:block\" class='".$texonomy_icon_type."'>&nbsp;</span>
+                            <span style=\"display:block\" class='".$taxonomy_icon."'>&nbsp;</span>
                         </span>
                         <span style=\"display:block\" class='card-right'>
                             <span style=\"display:block\" class='entry-header'>".get_the_title()."</span>
@@ -399,7 +423,7 @@ class AWDResourceArchive {
             </div>";
         }
 
-        echo json_encode( array( "success" => true, "count" => $count, "result" => $response_string ) );
+        echo json_encode( array( "success" => true, "count" => $count, "result" => $response_string, "logging" => $post_data ) );
         wp_die();
 
     }
@@ -489,7 +513,7 @@ class AWDResourceArchive {
         } else {
             $return_data = array(
                 "success"  => false,
-                "msg"      => "Sorry, but there are some issues on email sending"
+                "msg"      => "Sorry, there was an issue with sending your email. Please try again."
             );
             echo json_encode($return_data);
         }

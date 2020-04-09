@@ -17,12 +17,15 @@ if( $is_single ) {
 							);
 }
 
+/* translators: header bar share text (next to share icon) */
+$share_link_text = __( 'SHARE THIS PAGE', 'awd-resource-archive' );
+
 ?>
 
 <div class="header-bar">
     <div class="wrap">
         <?php echo ( $is_single ) ? $archive_return_link : ''; ?>
         <div class="awd-toggle"><?php echo do_shortcode( '[wpml_language_selector_widget]' ); ?></div>
-        <a href="#mail_send_modal" data-toggle="modal" class="header-bar-icon" id="send_mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+        <a href="#mail_send_modal" data-toggle="modal" data-content="<?php echo $share_link_text; ?>" class="header-bar-icon" id="send_mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
     </div>
 </div>

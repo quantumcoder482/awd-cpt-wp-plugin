@@ -22,6 +22,10 @@ $intro_text = get_field( 'intro_text', 'option' );
 $page_header_classes = 'page-header';
 $page_header_classes .= $featured_image ? ' awd-banner' : '';
 
+include_once( AWDRA_DIR . 'includes/class-helper.php' );
+
+$helper = new AWDHelper();
+
 /**
  *  Excert filter function
  * @limit Integer
@@ -94,10 +98,11 @@ $resources = new WP_Query( $args );
  */
 
 $get_terms_args = array(
-    'taxonomy' => 'resource_category',
-    'orderby' => 'name',
-    'order' => 'ASC',
-    'hide_empty' => false
+    'taxonomy'      => 'resource_category',
+    'meta_key'      => 'display_order',
+    'orderby'       => 'meta_value_num',
+    'order'         => 'ASC',
+    'hide_empty'    => false
 );
 $categories = get_terms( $get_terms_args );
 
@@ -174,12 +179,17 @@ get_header(); ?>
                             <?php
                                 if( $categories ){
                                     foreach ($categories as $cat){
-                                        $category = sprintf(
+                                        $category_name = sprintf(
                                                 /* translators: %s: Category name */
                                                 __( '%s', 'awd-resource-archive' ),
                                                 $cat->name
+                                            );
+                                        $category_slug = sprintf(
+                                                /* translators: %s: Category slug */
+                                                __( '%s', 'awd-resource-archive' ),
+                                                $cat->slug
                                             ); ?>
-                                        <option value='<?php echo $category; ?>'><?php echo $category; ?></option>
+                                        <option value='<?php echo $category_slug; ?>'><?php echo $category_name; ?></option>
                                     <?php }
                                 }
                             ?>
@@ -194,7 +204,7 @@ get_header(); ?>
                             <?php foreach( $trimesters as $tab_number => $trimester ) {
                                 $short_name = get_field( 'awd_abbreviation', $trimester ) ?: $trimester->name; ?>
 
-                                <div class="tab-menu" tab-attr="tab-<?php echo ++$tab_number; ?>">
+                                <div class="tab-menu" tab-attr="tab-<?php echo ++$tab_number; ?>" data-value="<?php echo $trimester->slug; ?>">
                                     <?php printf( __( '%s', 'awd-resource-archive' ),
                                         /* translators: %s: Trimester Abbreviation */
                                         $short_name
@@ -237,13 +247,24 @@ get_header(); ?>
                     <span style="display: block" class="post-card" id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
                         <span style="display: block" class="card-left">
                             <?php
-                                $texonomy_icon_type = 'default-taxonomy-type';
+                                $taxonomy_icon = 'default-taxonomy-type';
                                 $post_terms = wp_get_post_terms(get_the_ID(), 'resource_category');
                                 if( $post_terms ){
-                                    $texonomy_icon_type = $post_terms[0]->slug;
+                                    $primary_term = $helper->get_primary_category( get_the_ID(), 'resource_category' );
+                                    $english_term_id = apply_filters( 'wpml_object_id', $primary_term->term_id, 'resource_category', true, 'en' );
+
+                                    global $icl_adjust_id_url_filter_off;
+                                    $orig_flag_value = $icl_adjust_id_url_filter_off;
+                                    $icl_adjust_id_url_filter_off = true;
+
+                                    $english_term = !empty( $english_term_id ) ? get_term_by( 'id', $english_term_id, 'resource_category' ) : '';
+
+                                    $icl_adjust_id_url_filter_off = $orig_flag_value;
+
+                                    $taxonomy_icon = !empty( $english_term ) ? $english_term->slug : 'default-taxonomy-type';
                                 }
                             ?>
-                            <span style="display: block" class="<?php echo $texonomy_icon_type; ?>">&nbsp;</span>
+                            <span style="display: block" class="<?php echo $taxonomy_icon; ?>">&nbsp;</span>
                         </span>
                         <span style="display: block" class="card-right">
                             <span style="display: block" class="entry-header">

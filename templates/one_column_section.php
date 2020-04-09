@@ -26,11 +26,11 @@ if( $button ) {
 ?>
 <div <?php echo $container_attributes; ?>>
     <div class="wrap">
-        <?php echo $content;
+        <?php _e( $content, 'awd-resource-archive' );
 
         if( $button ) { ?>
             <div class="section-button">
-                <a class="<?php echo $button_style; ?>" href="<?php echo esc_url($button_url); ?>" target="<?php echo esc_attr($button_target); ?>"><?php echo esc_html($button_title); ?></a>
+                <a class="<?php echo $button_style; ?>" href="<?php echo esc_url($button_url); ?>" target="<?php echo esc_attr($button_target); ?>"><?php _e( esc_html($button_title), 'awd-resource-archive' ); ?></a>
             </div>
         <?php } ?>                   
     </div>

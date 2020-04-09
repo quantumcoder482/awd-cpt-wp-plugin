@@ -101,7 +101,7 @@ class AWDLayouts {
            return $content;
        }
        // Create helper object with this post's ID
-       $this->helper = new AWDHelper( get_the_ID() );
+       $this->helper = new AWDHelper();
 
        $new_content = '';
 
@@ -140,10 +140,17 @@ class AWDLayouts {
         wp_localize_script( 'awdra-js', 'settings', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'translations' => array(
-                "cant_send_email" => __( "Sorry, there are have some issues. can't send email", "awd-resource-archive" ),
-                "please_input_name_email" => __( "Please input email and name correctly!", "awd-resource-archive" ),
-                "email_blank" => __( "Email Blank", "awd-resource-archive" ),
-                "name_blank" => __( "Name Blank", "awd-resource-archive" ),
+                /* translators: "Share this page" error message */
+                "loading_results" => __( "Loading results...", "awd-resource-archive" ),
+                /* translators: "Share this page" error message */
+                "cant_send_email" => __( "Sorry, there was an issue. Can't send email.", "awd-resource-archive" ),
+                /* translators: "Share this page" error message */
+                "please_input_name_email" => __( "Please enter email and name correctly!", "awd-resource-archive" ),
+                /* translators: "Share this page" error message */
+                "email_blank" => __( "Please enter email address", "awd-resource-archive" ),
+                /* translators: "Share this page" error message */
+                "name_blank" => __( "Please enter name", "awd-resource-archive" ),
+                /* translators: "Share this page" error message */
                 "email_invalid_format" => __( "Invalid Email Address Format", "awd-resource-archive" )
             )
         ) );

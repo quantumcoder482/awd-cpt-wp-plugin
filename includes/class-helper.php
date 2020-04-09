@@ -8,16 +8,6 @@ defined( "ABSPATH" ) OR die();
 
 class AWDHelper {
 	/**
-	 * Post ID
-	 * @var int
-	 */
-	protected $id;
-
-	public function __construct( $id ) {
-		$this->id = $id;
-	}
-
-	/**
 	 * Set up section wrapper classes and ids.
 	 * @param  string	$section_classes	any section-specific classes to add
 	 * @return string 	classes and id to insert into section wrapper
@@ -56,5 +46,35 @@ class AWDHelper {
 		}
 
 		return $number_formats;
+	}
+
+	/**
+	 * Get primary category as set by Yoast
+	 * @param  int		$post_id	Post ID of post to query
+	 * @param  string	$taxonomy	Taxonomy to query
+	 * @return object           	WP_Term object for primary category if set, otherwise first category
+	 */
+	public function get_primary_category( $post_id, $taxonomy ) {
+		$category = get_the_terms( $post_id, $taxonomy );
+
+		// Get primary (Yoast) term if it is set
+		if ( class_exists('WPSEO_Primary_Term') ) {
+
+		     // Show the post's 'Primary' category, if this Yoast feature is available, & one is set
+			$wpseo_primary_term = new WPSEO_Primary_Term( $taxonomy, $post_id );
+			$wpseo_primary_term = $wpseo_primary_term->get_primary_term();
+			$term = get_term( $wpseo_primary_term );
+
+		     if ( !is_wp_error( $term ) ) {
+
+		          // Return the primary category if set
+		          return $term;
+
+		     }
+
+		}
+
+		// If Yoast isn't available or if primary category isn't set, fall back to the first category in WP's list of assigned categories
+		return $category[0];
 	}
 }

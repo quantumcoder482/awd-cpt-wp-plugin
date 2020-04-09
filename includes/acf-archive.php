@@ -7,7 +7,13 @@ class ACF_Archive {
      * ACF_Archive constructor.
      */
     public function __construct() {
-        add_action( 'after_setup_theme', [ $this, 'boot' ] );
+
+        $this->group_actions();
+    }
+
+    public function group_actions() {
+        add_action( 'after_setup_theme', array( $this, 'boot' ) );
+        add_filter( 'acf/prepare_field/name=awd_abbreviation', array( $this, 'awd_hide_field' ) );
     }
 
     /**
@@ -29,7 +35,7 @@ class ACF_Archive {
      */
     public function boot() {
         if ( ! class_exists( 'ACF' ) ) {
-            add_action( 'admin_notices', [ $this, 'acf_installed_notify' ] );
+            add_action( 'admin_notices', array( $this, 'acf_installed_notify' ) );
             return;
         }
         
@@ -68,5 +74,19 @@ class ACF_Archive {
 	        ));
 	    }
 	}
+    /**
+     * Hide awd_abbreviations field everywhere except trimesters
+     * @param  obj $field   ACF field object
+     * @return obj          unaltered ACF field object, only returned if conditions are met
+     */
+    public function awd_hide_field( $field ) {
+        global $taxnow;
+        
+        if( !is_admin() || $taxnow != 'trimester' ) {   
+            return false;
+        }
+
+        return $field;
+    }
 }
 

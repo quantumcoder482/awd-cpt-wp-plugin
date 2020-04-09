@@ -159,7 +159,7 @@ ul.arrow-list.short { column-count: 1; }
     /*  #resource-archive .header-bar-icon, .single-resource .header-bar-icon { top: 12px !important; } */
 
     /* #resource-archive .header-bar-icon:before, .single-resource .header-bar-icon:before { content: 'SHARE THIS LINK'; font-size: 12px; font-family: "calibre", Arial, sans-serif; text-transform: uppercase; padding: 0 17px; display: inline-block; } */
-    #resource-archive .header-bar-icon::before, .single-resource .header-bar-icon::before { content: 'SHARE THIS LINK'; font-size: 12px; font-family: "calibre", Arial, sans-serif; text-transform: uppercase; padding: 0 17px; display: flex; line-height: 30px; align-items: center; }
+    #resource-archive .header-bar-icon::before, .single-resource .header-bar-icon::before { content: attr(data-content); font-size: 12px; font-family: "calibre", Arial, sans-serif; text-transform: uppercase; padding: 0 17px; display: flex; line-height: 30px; align-items: center; }
 
 /*     .single-resource .back-link { top: 12px !important; } */ }
 
